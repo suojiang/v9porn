@@ -1,8 +1,6 @@
 package com.u9porn.parser;
 
 import android.text.TextUtils;
-import android.util.Base64;
-
 import com.orhanobut.logger.Logger;
 import com.u9porn.data.db.entity.V9PornItem;
 import com.u9porn.data.db.entity.VideoResult;
@@ -10,16 +8,12 @@ import com.u9porn.data.model.BaseResult;
 import com.u9porn.data.model.User;
 import com.u9porn.data.model.VideoComment;
 import com.u9porn.utils.StringUtils;
-
+import java.util.ArrayList;
+import java.util.List;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * @author flymegoc
@@ -212,7 +206,7 @@ public class ParseV9PronVideo {
         }
 
 
-        final String reg = "document.write\\(strencode\\(\"(.+)\",\"(.+)\",.+\\)\\);";
+        /*final String reg = "document.write\\(strencode\\(\"(.+)\",\"(.+)\",.+\\)\\);";
         Pattern p = Pattern.compile(reg);
         Matcher m = p.matcher(html);
         String param1 = "", param2 = "";
@@ -234,8 +228,13 @@ public class ParseV9PronVideo {
         Document source = Jsoup.parse(source_str);
         String videoUrl = source.select("source").first().attr("src");
         videoResult.setVideoUrl(videoUrl);
+        Logger.t(TAG).d("视频链接：" + videoUrl);*/
+    
+        Document doc = Jsoup.parse(html);
+        String videoUrl = doc.select("source").first().attr("src");
+        videoResult.setVideoUrl(videoUrl);
         Logger.t(TAG).d("视频链接：" + videoUrl);
-
+    
         int startIndex = videoUrl.lastIndexOf("/");
         int endIndex = videoUrl.indexOf(".mp4");
         String videoId = videoUrl.substring(startIndex + 1, endIndex);
@@ -243,7 +242,7 @@ public class ParseV9PronVideo {
         Logger.t(TAG).d("视频Id：" + videoId);
 
         //这里解析的作者id已经变了，非纯数字了
-        Document doc = Jsoup.parse(html);
+        //Document doc = Jsoup.parse(html);
         String ownerUrl = doc.select("a[href*=UID]").first().attr("href");
         String ownerId = ownerUrl.substring(ownerUrl.indexOf("=") + 1, ownerUrl.length());
         videoResult.setOwnerId(ownerId);
